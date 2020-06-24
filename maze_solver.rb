@@ -1,6 +1,6 @@
 require 'byebug'
 class Maze
-    attr_reader :maze, :current_space, :closed_list, :parent_hash, :spaces, :done ###might want to delete from this later for security
+    attr_reader :maze, :current_space, :closed_list, :parent_hash, :spaces, :done 
     
     def initialize(maze_name)
         f = File.open(maze_name)
@@ -14,7 +14,6 @@ class Maze
         @done = false
     end
 
-    ###################################
 
     def run ###def not sure about this one
         self.fill_spaces
@@ -37,9 +36,7 @@ class Maze
         @spaces
     end
 
-    ######################################
-
-    def fill_spaces #gives me the grid with all unavailable spots fill in with $
+    def fill_spaces 
         (0...@spaces.length).each do |row|
             (0...@spaces[row].length).each do |col|
                @spaces[row][col] = "S" if @maze[row][col] == "S"
@@ -50,7 +47,7 @@ class Maze
         @spaces
     end
 
-    def start_pos #remember this return a [] pos, would like to find out something at automatically converts pos to @spaces[row][col]
+    def start_pos 
         row = @spaces.detect {|array| array.include?("S")}
         @closed_list << [@spaces.index(row), row.index("S")]
         return [@spaces.index(row), row.index("S")]
@@ -68,7 +65,6 @@ class Maze
             ((col - 1)..(col + 1)).each do |y|
                 pos = [x, y]
                 return true if @spaces[x][y] == "E"
-                #return self.finished if @spaces[x][y] == "E"
             end
         end 
         false 
@@ -76,17 +72,17 @@ class Maze
 
     #########################  Helpers: ##############################
 
-    def current_space #need to add an else here for cases after the first, will need to call on last move
+    def current_space 
         @closed_list.last
     end
 
-    def walkable?(pos)#might be able to clean this up with a bracket method or something but unsure
+    def walkable?(pos)
         row, col = pos[0], pos[1]
         return true if @spaces[row][col] == "_"
         false
     end
 
-    def [](pos)#gives what is in the grid at the give position
+    def [](pos)
         row = pos[0]
         col = pos[1]
         @spaces[row][col]
@@ -105,14 +101,14 @@ class Maze
         @parent_hash
     end
 
-    def g_cost(pos) #finds movement cost from starting pos, might have to add parent square g-cost sometime
+    def g_cost(pos) 
         row, col = pos[0], pos[1]
-        parent = @parent_hash[pos] #if i can incorporate the parent_hash method into another method might be able to siplify
-        return 14 if parent[1] != col && parent[0] != row #cost of diagonal movement
+        parent = @parent_hash[pos] 
+        return 14 if parent[1] != col && parent[0] != row
         return 10 
     end
 
-    def h_cost(pos)#estimates the total amount of movement to final destination vert. and hor. w/out barriers * 10
+    def h_cost(pos)
         cost = 0
         row, col = pos[0], pos[1]
         e_row, e_col = self.end_pos[0], self.end_pos[1]
@@ -126,7 +122,7 @@ class Maze
         return gcost + hcost
     end
 
-    def next_space#parent hash/open list must be called before this
+    def next_space
         f_score = {}
 
         @parent_hash.each_key do |adj_space|
